@@ -2,21 +2,13 @@ const functions = require('firebase-functions');
 const admin = require('firebase-admin');
 const app = require('express')();
 const firebase = require('firebase');
-var firebaseConfig = {
-    apiKey: "AIzaSyCm-kTRb8dc_gzFYT6IGv6_lOg0aHGF4a0",
-    authDomain: "socialape-7b464.firebaseapp.com",
-    databaseURL: "https://socialape-7b464.firebaseio.com",
-    projectId: "socialape-7b464",
-    storageBucket: "socialape-7b464.appspot.com",
-    messagingSenderId: "181574457782",
-    appId: "1:181574457782:web:9331160eddc563cc"
-  }
+const firebaseConfig = require('./fbConfig');
 
 // authentication for local firebase serve
-var serviceAccount = require('./socialape-7b464-91f2fd791763.json');
+var serviceAccount = require('./instabar-7b464-91f2fd791763');
 admin.initializeApp({
     credential: admin.credential.cert(serviceAccount),
-    databaseURL: "https://socialape-7b464.firebaseio.com/"
+    databaseURL: "https://instabar-7b464.firebaseio.com/"
 });
 
 // authentication
@@ -52,38 +44,38 @@ const FBAuth = (req,res,next) => {
         })
 }
 
-// Screams
-app.get('/scream', (req,res) => {
-    db.collection(`screams`)
+// Requests
+app.get('/request', (req,res) => {
+    db.collection(`requests`)
     .orderBy('createdAt','desc')
     .get()
     .then(data => {
-        let screams = [];
+        let requests = [];
         data.forEach(doc => {
-            screams.push({
-                screamId: doc.id,
+            requests.push({
+                requestId: doc.id,
                 body: doc.data().body,
                 userHandle: doc.data().userHandle,
                 createdAt: doc.data().createdAt
             });
         })
-        return res.json(screams);
+        return res.json(requests);
     })
     .catch(err => console.error(err))
 })
 
-app.post('/scream', FBAuth, (req, res) => {
+app.post('/request', FBAuth, (req, res) => {
     if(req.method !== 'POST'){
         return res.status(400).json({error: 'Method not allowed.'})
     }
-    const newScream = {
+    const newRequest = {
         body: req.body.body,
         userHandle: req.user.handle,
         createdAt: new Date().toISOString()
     }
 
-    db.collection(`screams`)
-        .add(newScream)
+    db.collection(`requests`)
+        .add(newRequest)
         .then(doc => {
             res.json({message: `document ${doc.id} created successfully`});
         })

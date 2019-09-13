@@ -64,5 +64,5 @@ node_modules/
 # dotenv environment variables file
 .env
 
-# socialape file
-./functions/socialape-7b464-91f2fd791763.json
+# instabar file
+./functions/instabar-7b464-91f2fd791763.json
